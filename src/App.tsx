@@ -12,6 +12,7 @@ import {
 import { sendConfirmationEmailToServer } from './services/emailService';
 import { getCachedAccessToken } from './services/firebaseAuth';
 import { saveApplicationToFirestore } from './services/firestoreService';
+import { formatToDDMMYYYY } from './utils/dateUtils';
 import {
   Send,
   AlertTriangle,
@@ -474,6 +475,11 @@ export default function App() {
                       required
                       className="w-full p-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-[#8B9A6E] focus:ring-1 focus:ring-[#8B9A6E] bg-white cursor-pointer"
                     />
+                    {formData.dob && (
+                      <p className="text-[11px] text-neutral-500 mt-1 font-medium">
+                        Selected (DD/MM/YYYY): <span className="font-semibold text-neutral-800">{formatToDDMMYYYY(formData.dob)}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -660,6 +666,11 @@ export default function App() {
                       required
                       className="w-full p-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-[#8B9A6E] focus:ring-1 focus:ring-[#8B9A6E] bg-white cursor-pointer"
                     />
+                    {formData.date && (
+                      <p className="text-[11px] text-neutral-500 mt-1 font-medium">
+                        Selected (DD/MM/YYYY): <span className="font-semibold text-neutral-800">{formatToDDMMYYYY(formData.date)}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
 

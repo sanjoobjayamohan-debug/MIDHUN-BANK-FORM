@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf';
 import { SubmittedApplication } from '../types';
+import { formatToDDMMYYYY } from '../utils/dateUtils';
 
 export interface GeneratedPdfResult {
   doc: jsPDF;
@@ -67,7 +68,7 @@ export const generateApplicationPdf = async (
     ['Full Name of Applicant', app.name || '-'],
     ["Father's / Husband's Name", app.fatherName || '-'],
     ['Gender', app.gender || '-'],
-    ['Date of Birth & Age', `${app.dob || '-'} (${app.age ? `${app.age} Years` : '-'})`],
+    ['Date of Birth & Age', `${formatToDDMMYYYY(app.dob)} (${app.age ? `${app.age} Years` : '-'})`],
     ['Qualification', app.qualification || '-'],
     ['Mobile Number', app.mobileNo ? `+91 ${app.mobileNo}` : '-'],
     ['Premises / House / Street', app.address || '-'],
@@ -160,7 +161,7 @@ export const generateApplicationPdf = async (
   doc.text(`Date: `, margin, y + 11);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(0, 0, 0);
-  doc.text(app.date || '-', margin + 14, y + 11);
+  doc.text(formatToDDMMYYYY(app.date), margin + 14, y + 11);
 
   // Right: Signature Box
   doc.setFont('helvetica', 'bold');

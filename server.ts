@@ -33,6 +33,19 @@ app.get("/api/email-status", (req, res) => {
 const ADMIN_EMAIL = "michaelmidhun100@gmail.com";
 
 /**
+ * Formats YYYY-MM-DD into DD/MM/YYYY
+ */
+function formatToDDMMYYYY(dateString?: string): string {
+  if (!dateString) return "—";
+  const match = dateString.trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) {
+    const [, y, m, d] = match;
+    return `${d}/${m}/${y}`;
+  }
+  return dateString;
+}
+
+/**
  * Generate official Membership Application PDF Buffer on the server
  */
 function generateServerApplicationPdf(data: {
@@ -120,7 +133,7 @@ function generateServerApplicationPdf(data: {
   addRow("Full Name of Applicant", data.applicantName);
   if (data.fatherName) addRow("Father's / Husband's Name", data.fatherName);
   if (data.gender) addRow("Gender", data.gender);
-  if (data.dob) addRow("Date of Birth", data.dob);
+  if (data.dob) addRow("Date of Birth", formatToDDMMYYYY(data.dob));
   if (data.age) addRow("Age", `${data.age} years`);
   addRow("Mobile Number", data.mobileNo || "—");
   addRow("Email Address", data.email || "—");

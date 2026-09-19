@@ -5,6 +5,19 @@ import { jsPDF } from 'jspdf';
 const ADMIN_EMAIL = 'michaelmidhun100@gmail.com';
 
 /**
+ * Formats YYYY-MM-DD into DD/MM/YYYY
+ */
+function formatToDDMMYYYY(dateString?: string): string {
+  if (!dateString) return '—';
+  const match = dateString.trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) {
+    const [, y, m, d] = match;
+    return `${d}/${m}/${y}`;
+  }
+  return dateString;
+}
+
+/**
  * Netlify Serverless Function Handler
  * Supports Dual-Email Dispatch:
  * 1. Admin Email: Form data converted to PDF and sent as attachment to hardcoded ADMIN_EMAIL.
@@ -126,7 +139,7 @@ export const handler = async (event: any, _context: any) => {
       addRow('Full Name of Applicant', name);
       if (fatherName) addRow("Father's / Husband's Name", fatherName);
       if (gender) addRow('Gender', gender);
-      if (dob) addRow('Date of Birth', dob);
+      if (dob) addRow('Date of Birth', formatToDDMMYYYY(dob));
       if (age) addRow('Age', `${age} years`);
       addRow('Mobile Number', mobileNo || '—');
       addRow('Email Address', recipientEmail);

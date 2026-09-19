@@ -12,6 +12,7 @@ import {
   PlusCircle,
 } from 'lucide-react';
 import { buildShortReferralUrl, getShortReferralCode } from '../services/referralUtils';
+import { formatToDDMMYYYY } from '../utils/dateUtils';
 
 interface AcknowledgementSlipProps {
   application: SubmittedApplication;
@@ -252,7 +253,7 @@ export const AcknowledgementSlip: React.FC<AcknowledgementSlipProps> = ({
                   Date of Birth & Age
                 </td>
                 <td className="px-3 py-2 text-neutral-900">
-                  {application.dob} ({application.age} Years)
+                  {formatToDDMMYYYY(application.dob)} ({application.age} Years)
                 </td>
               </tr>
               <tr className="border-b border-neutral-200">
