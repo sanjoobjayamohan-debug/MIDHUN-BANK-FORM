@@ -29,35 +29,48 @@ export async function sendConfirmationEmailToServer(
   }
 
   try {
-    const response = await fetch('/api/send-confirmation-email', {
+    const payload = JSON.stringify({
+      recipientEmail: recipient,
+      applicantName: app.name,
+      applicationId: app.applicationId,
+      pdfBase64: pdfBase64 || '',
+      pdfFilename: pdfFilename || `${app.applicationId}-membership-application.pdf`,
+      mobileNo: app.mobileNo,
+      bankName: app.bankName,
+      bcName: app.corporateBcName,
+      district: app.district,
+      state: app.state,
+      pincode: app.pincode,
+      fatherName: app.fatherName,
+      gender: app.gender,
+      dob: app.dob,
+      age: app.age,
+      postal: app.postal,
+      address: app.address,
+      qualification: app.qualification,
+      place: app.place,
+      date: app.date,
+      submittedAt: app.submittedAt,
+    });
+
+    let response = await fetch('/api/send-confirmation-email', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        recipientEmail: recipient,
-        applicantName: app.name,
-        applicationId: app.applicationId,
-        pdfBase64: pdfBase64 || '',
-        pdfFilename: pdfFilename || `${app.applicationId}-membership-application.pdf`,
-        mobileNo: app.mobileNo,
-        bankName: app.bankName,
-        bcName: app.corporateBcName,
-        district: app.district,
-        state: app.state,
-        pincode: app.pincode,
-        fatherName: app.fatherName,
-        gender: app.gender,
-        dob: app.dob,
-        age: app.age,
-        postal: app.postal,
-        address: app.address,
-        qualification: app.qualification,
-        place: app.place,
-        date: app.date,
-        submittedAt: app.submittedAt,
-      }),
+      body: payload,
     });
+
+    // If running on static host / Netlify where /api wasn't redirected, fallback directly to Netlify function
+    if (response.status === 404) {
+      response = await fetch('/.netlify/functions/submit-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: payload,
+      });
+    }
 
     const data = await response.json();
 
