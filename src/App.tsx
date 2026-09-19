@@ -111,6 +111,13 @@ export default function App() {
     showToast(`Authenticated as ${user.email}.`, 'success');
   };
 
+  // Calculate maximum allowed DOB date (must be at least 18 years ago from today)
+  const getMaxDobDate = () => {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 18);
+    return today.toISOString().split('T')[0];
+  };
+
   // Age calculation from DOB
   const calculateAge = (dobString: string) => {
     if (!dobString) return '';
@@ -134,6 +141,10 @@ export default function App() {
       dob: dobValue,
       age: computedAge,
     }));
+
+    if (dobValue && Number(computedAge) < 18) {
+      showToast('Applicant must be at least 18 years of age to apply for membership.', 'error');
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -169,6 +180,24 @@ export default function App() {
       const emailEl = document.getElementById('applicantEmail');
       emailEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       emailEl?.focus();
+      return;
+    }
+
+    // Age / Date of Birth check (Must be at least 18 years)
+    if (!formData.dob) {
+      showToast('Please select your Date of Birth.', 'error');
+      const dobEl = document.getElementById('dob');
+      dobEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      dobEl?.focus();
+      return;
+    }
+
+    const currentAge = Number(formData.age || calculateAge(formData.dob));
+    if (isNaN(currentAge) || currentAge < 18) {
+      showToast('Applicant must be at least 18 years old to apply for membership.', 'error');
+      const dobEl = document.getElementById('dob');
+      dobEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      dobEl?.focus();
       return;
     }
 
@@ -470,12 +499,22 @@ export default function App() {
                       name="dob"
                       value={formData.dob}
                       onChange={handleDobChange}
-                      min="1947-01-01"
-                      max="2500-12-31"
+                      min="1940-01-01"
+                      max={getMaxDobDate()}
                       required
-                      className="w-full p-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-[#8B9A6E] focus:ring-1 focus:ring-[#8B9A6E] bg-white cursor-pointer"
+                      className={`w-full p-2.5 text-sm border rounded-md focus:outline-none bg-white cursor-pointer ${
+                        formData.dob && Number(formData.age) < 18
+                          ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-red-50/20'
+                          : 'border-gray-300 focus:border-[#8B9A6E] focus:ring-1 focus:ring-[#8B9A6E]'
+                      }`}
                     />
-                    {formData.dob && (
+                    {formData.dob && Number(formData.age) < 18 && (
+                      <p className="text-[11px] text-red-600 mt-1 font-semibold flex items-center gap-1">
+                        <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                        Applicant must be at least 18 years of age (Current age: {formData.age || '0'} years).
+                      </p>
+                    )}
+                    {formData.dob && Number(formData.age) >= 18 && (
                       <p className="text-[11px] text-neutral-500 mt-1 font-medium">
                         Selected (DD/MM/YYYY): <span className="font-semibold text-neutral-800">{formatToDDMMYYYY(formData.dob)}</span>
                       </p>
